@@ -1,0 +1,84 @@
+1) What is the purpose of the SIP protocol?
+SIP protocol are: preserving the
+   confidentiality and integrity of messaging, preventing replay attacks
+   or message spoofing, providing for the authentication and privacy of
+   the participants in a session, and preventing denial-of-service
+   attacks.  Bodies within SIP messages separately require the security
+   services of confidentiality, integrity, and authentication.
+
+
+2) What is Request-URI?
+Request-URI: The Request-URI is a SIP or SIPS URI as described in           Section 19.1 or a general URI (RFC 2396 [5]).  It indicates the user or service to which this request is being addressed. The Request-URI MUST NOT contain unescaped spaces or control characters and MUST NOT be enclosed in "<>".
+
+3) What is a calling party? (A-party)
+Initiator, Calling Party, Caller: The party initiating a session (and dialog) with an INVITE request.  A caller retains this role from the time it sends the initial INVITE that established a dialog until the termination of that dialog.
+
+4) What is the called party? (B-party)
+Invitee, Invited User, Called Party, Callee: The party that receives an INVITE request for the purpose of establishing a new session.  A callee retains this role from the time it receives the INVITE until the termination of the dialog established by that INVITE.
+
+5) What field is used to store the number or person being callED (so-called B-party)?
+
+The Warning header field is used to carry additional information
+   about the status of a response.  Warning header field values are sent
+   with responses and contain a three-digit warning code, host name, and
+   warning text.
+   The "warn-text" should be in a natural language that is most likely
+   to be intelligible to the human user receiving the response.  This
+   decision can be based on any available knowledge, such as the
+   location of the user, the Accept-Language field in a request, or the Content-Language field in a response.  The default language is i-default [21].
+
+Bob's SIP phone receives the INVITE and alerts Bob to the incoming
+   call from Alice so that Bob can decide whether to answer the call,
+   that is, Bob's phone rings.  Bob's SIP phone indicates this in a 180
+   (Ringing) response, which is routed back through the two proxies in
+   the reverse direction.  Each proxy uses the Via header field to
+   determine where to send the response and removes its own address from
+   the top.
+
+6) What is a SIP Invite? What is it used for?
+There are special rules for message bodies that contain a session description - their corresponding Content-Disposition is "session". SIP uses an offer/answer model where one UA sends a session description, called the offer, which contains a proposed description of the session.  The offer indicates the desired communications means (audio, video, games), parameters of those means(such as codec types) and addresses for receiving media from the answerer.  The other UA responds with another session description, called the answer, which indicates which communications means are accepted, the parameters that apply to those means, and addresses for receiving media from the offerer. An offer/answer exchange is within the context of a dialog, so that if a SIP INVITE results in multiple dialogs, each is a separate offer/answer exchange.  The offer/answer
+   model defines restrictions on when offers and answers can be made (for example, you cannot make a new offer while one is in progress). This results in restrictions on where the offers and answers can appear in SIP messages.  In this specification, offers and answers can only appear in INVITE requests and responses, and ACK.  The usage of offers and answers is further restricted.  For the initial INVITE transaction, the rules are:
+*What is it used for?
+-The initial offer MUST be in either an INVITE or, if not there,in the first reliable non-failure message from the UAS back to the UAC.  In this specification, that is the final 2xx response.
+
+7) What is a SIP Notify?
+Bob's SIP phone receives the INVITE and alerts Bob to the incoming call from Alice so that Bob can decide whether to answer the call, that is, Bob's phone rings.  Bob's SIP phone indicates this in a 180 (Ringing) response, which is routed back through the two proxies in the reverse direction.
+
+8) PersonA is calling PersonB - please draw call-flow diagram that typically represents a call being initiated, answered, and then hung up?
+
+PersonA					PersonB
+|		  proxy                   |
+|	invite      |	invite		  |
+| ----------------->|-------------------> |
+|	trying      |	ringing		  |
+| <-----------------|<------------------- |
+|	ringing	    |	ok		  |
+| <-----------------|<--------------------|
+|	ok	    |			  |
+|<------------------| 			  |
+|					  |
+|		ack			  |
+| --------------------------------------> |
+|					  |
+|		rtp/rtcp		  |
+| <-------------------------------------> |
+|					  |
+|		bye			  |
+| --------------------------------------> |
+|					  |
+|		ok			  |
+| <-------------------------------------- |
+			
+
+Given below is a step-by-step explanation of the above call flow:
+An INVITE request that is sent to a proxy server is responsible for initiating a session.
+The proxy server sendsa 100 Trying response immediately to the caller PERSON A to stop the re-transmissions of the INVITE request.
+The proxy server searches the address of Bob in the location server. After getting the address, it forwards the INVITE request further.
+Thereafter, 180 Ringing (Provisional responses) generated by PERSON B is returned back to PERSON A.
+A 200 OK response is generated soon after PERSON B picks the phone up.
+Bob receives an ACK from the PERSON A, once it gets 200 OK.
+At the same time, the session gets established and RTP packets (conversations) start flowing from both ends.
+After the conversation, any participant (PERSON A or PERSON B) can send a BYE request to terminate the session.
+BYE reaches directly from PERSON A to PERSON B bypassing the proxy server.
+Finally, PERSON B sends a 200 OK response to confirm the BYE and the session is hagn up.
+
